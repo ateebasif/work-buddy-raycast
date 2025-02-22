@@ -16,7 +16,8 @@
       "@/components/*": ["./src/components/*"],
       "@/hooks/*": ["./src/hooks/*"],
       "@/types/*": ["./src/types/*"],
-      "@/lib/*": ["./src/lib/*"]
+      "@/lib/*": ["./src/lib/*"],
+      "@/store/*": ["./src/store/*"]
     }
   }
 }

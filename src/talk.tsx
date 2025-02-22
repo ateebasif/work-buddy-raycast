@@ -6,7 +6,7 @@ import { ModelSelection } from "@/components/chat/ModelSelection";
 import { ChatView } from "@/components/chat/ChatView";
 import { useChat } from "@/hooks/useChat";
 
-import { StepView } from "./types";
+import { StepView } from "@/types/index";
 
 const Talk = () => {
   const [step, setStep] = useState<StepView>("chatList");
