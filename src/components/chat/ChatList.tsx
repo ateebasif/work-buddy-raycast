@@ -1,32 +1,39 @@
-import { StepView } from "@/types/index";
+import { useEffect } from "react";
 import { ActionPanel, Action, List } from "@raycast/api";
 
-interface ChatListProps {
-  existingChats: string[];
-  loadChat: (chatName: string) => void;
-  deleteChat: (chatName: string) => void;
-  setStep: (step: StepView) => void;
-}
+import useChatStore from "@/store/chatStore";
 
-export const ChatList = ({ existingChats, loadChat, deleteChat, setStep }: ChatListProps) => {
+export const ChatList = () => {
+  const existingChats = useChatStore((state) => state.existingChats);
+  const loadChat = useChatStore((state) => state.loadChat);
+  const deleteChat = useChatStore((state) => state.deleteChat);
+  const setCurrentView = useChatStore((state) => state.setCurrentView);
+  const loadChats = useChatStore((state) => state.loadChats);
+  const isLoading = useChatStore((state) => state.isLoading);
+
   const onChatSelect = (chat: string) => {
     loadChat(chat);
-    setStep("chatView");
+    setCurrentView("chatView");
   };
 
+  useEffect(() => {
+    loadChats();
+  }, []);
+
   return (
-    <List navigationTitle="Start Chat" searchBarPlaceholder="Select a Chat">
+    <List navigationTitle="Start Chat" searchBarPlaceholder="Select a Chat" isLoading={isLoading}>
       <List.Item
         title="Create New Chat"
         actions={
           <ActionPanel>
-            <Action title="Create New Chat" onAction={() => setStep("modelSelection")} />
+            <Action title="Create New Chat" onAction={() => setCurrentView("createChat")} />
           </ActionPanel>
         }
       />
-      {existingChats.map((chat) => (
+
+      {existingChats.map((chat, index) => (
         <List.Item
-          key={chat}
+          key={chat + index}
           title={chat}
           actions={
             <ActionPanel>

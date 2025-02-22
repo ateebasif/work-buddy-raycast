@@ -14,22 +14,8 @@
     {
       "name": "talk",
       "title": "Talk",
-      "subtitle": "Talk with AI",
-      "description": "Talk with ollama models",
-      "mode": "view"
-    },
-    {
-      "name": "talk2",
-      "title": "Talk Old implementation",
-      "subtitle": "Talk with AI",
-      "description": "Talk with ollama models",
-      "mode": "view"
-    },
-    {
-      "name": "talk3",
-      "title": "Talk Zustand",
-      "subtitle": "Talk with AI",
-      "description": "Talk with ollama models",
+      "subtitle": "Talk with your work buddy",
+      "description": "Engage in a conversation with your favorite Ollama models!",
       "mode": "view"
     }
   ],
