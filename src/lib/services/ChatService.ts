@@ -1,7 +1,9 @@
 import fs from "fs";
 import path from "path";
 import axios from "axios";
-import { CreateChat } from "../../types";
+import moment from "moment";
+
+import { ChatMessage, CreateChat } from "../../types";
 
 export class ChatService {
   private CHAT_DIR: string;
@@ -27,32 +29,25 @@ export class ChatService {
 
   public appendMessage(chatName: string, role: string, content: string): void {
     const chatFile = this.getChatFile(chatName);
-    const message = JSON.stringify({ role, content });
+    const timestamp = moment().valueOf(); // Get the current Unix timestamp using Moment.js
+    const message = JSON.stringify({ role, content, timestamp });
     fs.appendFileSync(chatFile, message + "\n", "utf8");
   }
 
-  public loadChatHistory(chatName: string): Array<{ role: string; content: string }> {
+  public loadChatHistory(chatName: string): Array<ChatMessage> {
     console.log("loading chat with name", chatName);
     const chatFile = this.getChatFile(chatName);
     if (!fs.existsSync(chatFile)) return [];
 
     const lines = fs.readFileSync(chatFile, "utf8").trim().split("\n");
 
+    console.log("lines", lines);
+
     // Check if lines are empty
     if (lines.length === 0 || (lines.length === 1 && lines[0] === "")) {
       return []; // Return an empty array if the file is empty
     }
 
-    console.log("lines", lines);
-    return lines.map((line) => JSON.parse(line));
-  }
-
-  public loadChatHistoryOld(chatName: string): Array<{ role: string; content: string }> {
-    const chatFile = this.getChatFile(chatName);
-    if (!fs.existsSync(chatFile)) return [];
-    const lines = fs.readFileSync(chatFile, "utf8").trim().split("\n");
-
-    console.log("lines", lines);
     return lines.map((line) => JSON.parse(line));
   }
 
@@ -72,12 +67,18 @@ export class ChatService {
   }
 
   public async streamOllamaResponse(
-    model: string,
+    model = "mistral:latest",
     chatName: string,
     query: string,
-    onData: (chunk: string) => void,
+    onData: (chunk: string, timestamp: number) => void,
     onEnd: () => void,
   ): Promise<void> {
+    console.log("inside streamOllamaResponse", {
+      model,
+      chatName,
+      query,
+    });
+
     const chatHistory = this.loadChatHistory(chatName);
 
     // Add the new user message to the chat history
@@ -103,7 +104,9 @@ export class ChatService {
         const jsonResponse = JSON.parse(data);
         console.log("jsonResponse", jsonResponse);
         assistantResponse += jsonResponse.message.content;
-        onData(jsonResponse.message.content);
+        const timestamp = moment().valueOf(); // Get the current Unix timestamp using Moment.js
+
+        onData(jsonResponse.message.content, timestamp);
       });
 
       response.data.on("end", () => {
