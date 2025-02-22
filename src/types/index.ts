@@ -5,4 +5,4 @@ export type CreateChat = {
 
 export type ChatMessage = { id: string; role: string; content: string; timestamp: number };
 
-export type CurrentView = "chatList" | "createChat" | "chatView";
+export type CurrentView = "chatList" | "createChat" | "chatView" | "composeMessage" | "viewResponse";

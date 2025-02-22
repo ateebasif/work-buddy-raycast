@@ -2,8 +2,9 @@ import { Detail } from "@raycast/api";
 
 import useChatStore from "@/store/chatStore";
 import { ChatList } from "@/components/chat/ChatList";
-import { ModelSelection } from "@/components/chat/CreateChat";
+import { CreateChat } from "@/components/chat/CreateChat";
 import { ChatView } from "@/components/chat/ChatView";
+import { ComposeMessage } from "@/components/chat/ComposeMessage";
 
 const Talk = () => {
   const currentView = useChatStore((state) => state.currentView);
@@ -13,7 +14,11 @@ const Talk = () => {
   }
 
   if (currentView === "createChat") {
-    return <ModelSelection />;
+    return <CreateChat />;
+  }
+
+  if (currentView === "composeMessage") {
+    return <ComposeMessage />;
   }
 
   if (currentView === "chatView") {

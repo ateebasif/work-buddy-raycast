@@ -9,6 +9,7 @@ export const ChatView = () => {
   const setInputMessage = useChatStore((state) => state.setInputMessage);
   const sendMessage = useChatStore((state) => state.sendMessage);
   const isLoading = useChatStore((state) => state.isLoading);
+  const setCurrentView = useChatStore((state) => state.setCurrentView);
 
   const isChatEmpty = messages.length === 0;
 
@@ -41,8 +42,14 @@ export const ChatView = () => {
                   <Action
                     title="Compose Message"
                     onAction={() => {
-                      /* Handle reply */
+                      setCurrentView("composeMessage");
                     }}
+                  />
+
+                  <Action
+                    title="Chat List"
+                    shortcut={{ modifiers: ["opt"], key: "escape" }}
+                    onAction={() => setCurrentView("chatList")}
                   />
                 </ActionPanel>
               }
@@ -53,7 +60,7 @@ export const ChatView = () => {
         return sortedMessages.map((msg, index) => {
           return (
             <List.Item
-              key={msg.id + index}
+              key={index}
               title={msg.role === "user" ? `You - ${msg.content}` : `Assistant - ${msg.content}`}
               subtitle={`${moment(msg.timestamp).fromNow(true)}`} // Optional: Display message index or timestamp
               detail={
@@ -65,8 +72,13 @@ export const ChatView = () => {
                   <Action
                     title="Compose Message"
                     onAction={() => {
-                      /* Handle reply */
+                      setCurrentView("composeMessage");
                     }}
+                  />
+                  <Action
+                    title="Chat List"
+                    shortcut={{ modifiers: ["opt"], key: "escape" }}
+                    onAction={() => setCurrentView("chatList")}
                   />
                 </ActionPanel>
               }

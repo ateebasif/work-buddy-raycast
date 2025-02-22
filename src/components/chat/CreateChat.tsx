@@ -9,7 +9,7 @@ interface CreateChat {
   chatName: string;
 }
 
-export const ModelSelection = () => {
+export const CreateChat = () => {
   const setCurrentView = useChatStore((state) => state.setCurrentView);
   const createChat = useChatStore((state) => state.createChat);
   const loadChat = useChatStore((state) => state.loadChat);
@@ -51,6 +51,11 @@ export const ModelSelection = () => {
       actions={
         <ActionPanel>
           <Action.SubmitForm title="Submit" onSubmit={handleSubmit} />
+          <Action
+            title="Chat List"
+            shortcut={{ modifiers: ["opt"], key: "escape" }}
+            onAction={() => setCurrentView("chatList")}
+          />
         </ActionPanel>
       }
     >
