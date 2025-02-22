@@ -4,3 +4,5 @@ export type CreateChat = {
 };
 
 export type ChatMessage = { id: string; role: string; content: string; timestamp: number };
+
+export type StepView = "chatList" | "modelSelection" | "chatView";

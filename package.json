@@ -13,30 +13,16 @@
   "commands": [
     {
       "name": "talk",
-      "title": "talk",
-      "subtitle": "talk with blackbox.ai",
-      "description": "",
+      "title": "Talk",
+      "subtitle": "Talk with AI",
+      "description": "Talk with ollama models",
       "mode": "view"
     },
     {
       "name": "talk2",
-      "title": "talk 2",
-      "subtitle": "talk with blackbox.ai",
-      "description": "",
-      "mode": "view"
-    },
-    {
-      "name": "talk3",
-      "title": "talk 3",
-      "subtitle": "talk with blackbox.ai",
-      "description": "",
-      "mode": "view"
-    },
-    {
-      "name": "talk4",
-      "title": "talk 4",
-      "subtitle": "talk with blackbox.ai",
-      "description": "",
+      "title": "Talk Old implementation",
+      "subtitle": "Talk with AI",
+      "description": "Talk with ollama models",
       "mode": "view"
     }
   ],

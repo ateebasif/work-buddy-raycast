@@ -3,7 +3,7 @@ import path from "path";
 import axios from "axios";
 import moment from "moment";
 
-import { ChatMessage, CreateChat } from "../../types";
+import { ChatMessage, CreateChat } from "@/types/index";
 
 export class ChatService {
   private CHAT_DIR: string;
@@ -58,7 +58,12 @@ export class ChatService {
   }
 
   public listChats(): string[] {
-    return fs.readdirSync(this.CHAT_DIR).map((file) => path.basename(file, ".txt")) || [];
+    return (
+      fs
+        .readdirSync(this.CHAT_DIR)
+        .map((file) => path.basename(file, ".txt"))
+        .filter((chat) => chat !== ".DS_Store") || []
+    );
   }
 
   public deleteChat(chatName: string): void {
