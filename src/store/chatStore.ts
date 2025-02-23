@@ -133,13 +133,23 @@ const useChatStore = create<ChatState>()(
             set({ isLoading: false });
           },
         );
-      } catch (error) {
-        console.error("Error streaming response:", error);
-        showToast({
-          style: Toast.Style.Failure,
-          title: "Error Sending Message",
-          message: "An error occurred while sending the message.",
-        });
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error("Error streaming response:", error);
+          showToast({
+            style: Toast.Style.Failure,
+            title: "Error Sending Message",
+            message: error.message, // Safely access the message property
+          });
+        } else {
+          console.error("Unexpected error:", error);
+          showToast({
+            style: Toast.Style.Failure,
+            title: "Error Sending Message",
+            message: "An unexpected error occurred.", // Fallback message
+          });
+        }
+        set({ isLoading: false });
       }
     },
   })),

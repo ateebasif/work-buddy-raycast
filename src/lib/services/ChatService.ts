@@ -7,6 +7,7 @@ import { ChatMessage, CreateChat } from "@/types/index";
 
 export class ChatService {
   private CHAT_DIR: string;
+  private isOllamaRunning: boolean | null = null; // Variable to cache the server status
 
   constructor() {
     this.CHAT_DIR = path.join(__dirname, "chats");
@@ -41,7 +42,7 @@ export class ChatService {
 
     const lines = fs.readFileSync(chatFile, "utf8").trim().split("\n");
 
-    console.log("lines", lines);
+    // console.log("lines", lines);
 
     // Check if lines are empty
     if (lines.length === 0 || (lines.length === 1 && lines[0] === "")) {
@@ -71,6 +72,48 @@ export class ChatService {
     if (fs.existsSync(chatFile)) fs.unlinkSync(chatFile);
   }
 
+  //! Method to get the list of installed models
+  public async getInstalledModels(): Promise<string[]> {
+    // Check if the Ollama server is running only once
+    if (this.isOllamaRunning === null) {
+      this.isOllamaRunning = await this.isOllamaServerRunning();
+    }
+
+    if (!this.isOllamaRunning) {
+      console.error("Ollama server is not running. Cannot fetch installed models.");
+      throw new Error("Ollama server is not running.");
+    }
+
+    try {
+      const response = await axios.get("http://localhost:11434/api/tags");
+      console.log("Installed models response:", response.data);
+
+      // Extract model names from the response
+      const modelNames = response.data.models.map((model: { name: string }) => model.name);
+      return modelNames; // Return an array of model names
+    } catch (error) {
+      console.error("Failed to fetch installed models:", error);
+      throw error; // Rethrow the error for handling in the calling code
+    }
+  }
+
+  //! Method to check if the Ollama server is running
+  private async isOllamaServerRunning(model = "llama3.2"): Promise<boolean> {
+    try {
+      const response = await axios.post("http://localhost:11434/api/generate", {
+        model: model,
+        prompt: "hey, just say hi",
+      });
+
+      // Log the response for debugging
+      console.log("✅ Ollama is running:");
+      return response.status === 200; // Assuming a 200 status means the server is running
+    } catch (error) {
+      console.error("❌ Ollama server is not running:", error);
+      return false; // Server is not running
+    }
+  }
+
   public async streamOllamaResponse(
     model = "mistral:latest",
     chatName: string,
@@ -83,6 +126,16 @@ export class ChatService {
       chatName,
       query,
     });
+
+    // Check if the Ollama server is running only once
+    if (this.isOllamaRunning === null) {
+      this.isOllamaRunning = await this.isOllamaServerRunning(model);
+    }
+
+    if (!this.isOllamaRunning) {
+      console.error("Ollama server is not running. Aborting request.");
+      throw new Error("Ollama server is not running.");
+    }
 
     const chatHistory = this.loadChatHistory(chatName);
 
@@ -107,7 +160,7 @@ export class ChatService {
       response.data.on("data", (chunk: Buffer) => {
         const data = chunk.toString();
         const jsonResponse = JSON.parse(data);
-        console.log("jsonResponse", jsonResponse);
+        // console.log("jsonResponse", jsonResponse);
         assistantResponse += jsonResponse.message.content;
         const timestamp = moment().valueOf(); // Get the current Unix timestamp using Moment.js
 
