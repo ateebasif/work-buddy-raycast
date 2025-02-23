@@ -6,8 +6,8 @@ import moment from "moment";
 import { ChatMessage, CreateChat } from "@/types/index";
 
 export class ChatService {
-  private CHAT_DIR: string;
-  private isOllamaRunning: boolean | null = null; // Variable to cache the server status
+  protected CHAT_DIR: string;
+  protected isOllamaRunning: boolean | null = null; // Variable to cache the server status
 
   constructor() {
     this.CHAT_DIR = path.join(__dirname, "chats");
@@ -98,7 +98,7 @@ export class ChatService {
   }
 
   //! Method to check if the Ollama server is running
-  private async isOllamaServerRunning(model = "llama3.2"): Promise<boolean> {
+  protected async isOllamaServerRunning(model = "llama3.2"): Promise<boolean> {
     try {
       const response = await axios.post("http://localhost:11434/api/generate", {
         model: model,
