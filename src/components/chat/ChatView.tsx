@@ -2,6 +2,7 @@ import { ActionPanel, Action, List } from "@raycast/api";
 import moment from "moment";
 
 import useChatStore from "@/store/chatStore";
+import { useMemo } from "react";
 
 export const ChatView = () => {
   const messages = useChatStore((state) => state.messages);
@@ -10,10 +11,15 @@ export const ChatView = () => {
   const sendMessage = useChatStore((state) => state.sendMessage);
   const isLoading = useChatStore((state) => state.isLoading);
   const setCurrentView = useChatStore((state) => state.setCurrentView);
+  const selectedChat = useChatStore((state) => state.selectedChat);
 
   const isChatEmpty = messages.length === 0;
 
-  const sortedMessages = [...messages].sort((a, b) => b.timestamp - a.timestamp);
+  // const sortedMessages = [...messages].sort((a, b) => b.timestamp - a.timestamp);
+
+  const sortedMessages = useMemo(() => {
+    return [...messages].sort((a, b) => b.timestamp - a.timestamp);
+  }, [messages]);
 
   return (
     <List
@@ -22,7 +28,8 @@ export const ChatView = () => {
       filtering={false}
       searchText={inputMessage}
       onSearchTextChange={setInputMessage}
-      navigationTitle="AI Chat"
+      // navigationTitle="AI Chat"
+      navigationTitle={selectedChat || "AI Chat"}
       searchBarPlaceholder="Ask AI..."
     >
       {(() => {
@@ -61,7 +68,9 @@ export const ChatView = () => {
           return (
             <List.Item
               key={index}
-              title={msg.role === "user" ? `You - ${msg.content}` : `Assistant - ${msg.content}`}
+              title={
+                msg.role === "user" ? `You - ${msg.content.slice(0, 20)}` : `Assistant - ${msg.content.slice(0, 20)}`
+              }
               subtitle={`${moment(msg.timestamp).fromNow(true)}`} // Optional: Display message index or timestamp
               detail={
                 <List.Item.Detail markdown={`**${msg.role === "user" ? "You" : "Assistant"}:**\n\n${msg.content}`} />

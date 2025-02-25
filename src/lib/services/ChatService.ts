@@ -4,6 +4,7 @@ import axios from "axios";
 import moment from "moment";
 
 import { ChatMessage, CreateChat } from "@/types/index";
+import { generateChatName } from "../utils";
 
 export class ChatService {
   protected CHAT_DIR: string;
@@ -15,7 +16,8 @@ export class ChatService {
   }
 
   public createChat({ model, chatName }: CreateChat): void {
-    const chatFile = this.getChatFile(`${chatName}-${model}`);
+    const chatFile = this.getChatFile(generateChatName(chatName, model));
+
     if (!fs.existsSync(chatFile)) {
       fs.writeFileSync(chatFile, "", "utf8"); // Create an empty file
       console.log(`Chat "${chatName}" with model "${model}" created successfully.`);
@@ -138,9 +140,10 @@ export class ChatService {
     }
 
     const chatHistory = this.loadChatHistory(chatName);
-
     // Add the new user message to the chat history
     this.appendMessage(chatName, "user", query);
+
+    console.log("✅chatHistory", [...chatHistory, { role: "user", content: query }].length);
 
     try {
       const response = await axios.post(

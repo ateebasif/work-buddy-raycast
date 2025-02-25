@@ -3,6 +3,7 @@ import { useForm, FormValidation } from "@raycast/utils";
 
 import useChatStore from "@/store/chatStore";
 import { MODELS } from "@/lib/constants";
+import { generateChatName } from "@/lib/utils";
 
 interface CreateChat {
   model: string;
@@ -29,7 +30,8 @@ export const CreateChat = () => {
         });
 
         // Calling chat service to create a chat
-        loadChat(`${chatName}-${model}`);
+
+        loadChat(generateChatName(chatName, model));
         setCurrentView("chatView");
       } catch (error) {
         console.error("Error creating chat:", error);
@@ -59,7 +61,7 @@ export const CreateChat = () => {
         </ActionPanel>
       }
     >
-      <Form.TextField title="Chat Name" placeholder="Tim Cook" error="Required" {...itemProps.chatName} />
+      <Form.TextField title="Chat Name" placeholder="Brainstorm Buddies" error="Required" {...itemProps.chatName} />
 
       <Form.Dropdown id="model" title="AI Model" defaultValue="mistral:latest">
         {MODELS.map((model) => (

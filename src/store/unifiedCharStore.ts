@@ -7,6 +7,7 @@ import { showToast, Toast } from "@raycast/api";
 import { ChatService } from "@/lib/services/ChatService";
 import { CodeFixService, CUSTOM_PROMPTS } from "@/lib/services/CodeFixService";
 import { ChatMessage, CreateChat, CurrentView } from "@/types/index";
+import { generateChatName } from "@/lib/utils";
 
 const chatServices = {
   chatService: new ChatService(),
@@ -136,7 +137,7 @@ const useChatStore = create<ChatStateUnified>()(
 
       // Update the existing chats in the state
       set((state) => {
-        state.services[currentService].existingChats.push(`${chatName}-${model}`);
+        state.services[currentService].existingChats.push(generateChatName(chatName, model));
       });
     },
 
@@ -183,7 +184,8 @@ const useChatStore = create<ChatStateUnified>()(
 
       if (!inputMessage.trim() || !selectedChat) return;
 
-      const model = selectedChat.split("-")[1]; // Extract model from selectedChat
+      // const model = selectedChat.split("-")[1]; // Extract model from selectedChat
+      const model = selectedChat.split("__")[1]; // Extract model from selectedChat
 
       const userMessage: ChatMessage = {
         id: nanoid(),
