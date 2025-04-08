@@ -1,8 +1,8 @@
-import { ActionPanel, Action, List } from "@raycast/api";
+import { ActionPanel, Action, List, Clipboard, Toast, showToast } from "@raycast/api";
 import moment from "moment";
+import { useMemo } from "react";
 
 import useChatStore from "@/store/chatStore";
-import { useMemo } from "react";
 
 export const ChatView = () => {
   const messages = useChatStore((state) => state.messages);
@@ -82,6 +82,24 @@ export const ChatView = () => {
                     title="Compose Message"
                     onAction={() => {
                       setCurrentView("composeMessage");
+                    }}
+                  />
+                  <Action
+                    title="Copy to Clipboard"
+                    onAction={async () => {
+                      await Clipboard.copy(msg.content)
+                        .then(() => {
+                          showToast({
+                            style: Toast.Style.Success,
+                            title: "Copied to Clipboard",
+                          });
+                        })
+                        .catch(() => {
+                          showToast({
+                            style: Toast.Style.Failure,
+                            title: "Failed to Copy",
+                          });
+                        });
                     }}
                   />
                   <Action
