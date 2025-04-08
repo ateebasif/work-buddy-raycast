@@ -4,10 +4,11 @@ import axios from "axios";
 import moment from "moment";
 
 import { ChatMessage, CreateChat } from "@/types/index";
+import { generateChatName } from "../utils";
 
 export class ChatService {
-  private CHAT_DIR: string;
-  private isOllamaRunning: boolean | null = null; // Variable to cache the server status
+  protected CHAT_DIR: string;
+  protected isOllamaRunning: boolean | null = null; // Variable to cache the server status
 
   constructor() {
     this.CHAT_DIR = path.join(__dirname, "chats");
@@ -15,7 +16,8 @@ export class ChatService {
   }
 
   public createChat({ model, chatName }: CreateChat): void {
-    const chatFile = this.getChatFile(`${chatName}-${model}`);
+    const chatFile = this.getChatFile(generateChatName(chatName, model));
+
     if (!fs.existsSync(chatFile)) {
       fs.writeFileSync(chatFile, "", "utf8"); // Create an empty file
       console.log(`Chat "${chatName}" with model "${model}" created successfully.`);
@@ -98,7 +100,7 @@ export class ChatService {
   }
 
   //! Method to check if the Ollama server is running
-  private async isOllamaServerRunning(model = "llama3.2"): Promise<boolean> {
+  protected async isOllamaServerRunning(model = "llama3.2"): Promise<boolean> {
     try {
       const response = await axios.post("http://localhost:11434/api/generate", {
         model: model,
@@ -138,9 +140,10 @@ export class ChatService {
     }
 
     const chatHistory = this.loadChatHistory(chatName);
-
     // Add the new user message to the chat history
     this.appendMessage(chatName, "user", query);
+
+    console.log("✅chatHistory", [...chatHistory, { role: "user", content: query }].length);
 
     try {
       const response = await axios.post(

@@ -43,7 +43,7 @@ export const ComposeMessage = () => {
         </ActionPanel>
       }
     >
-      <Form.TextArea title="Message" placeholder="Tim Cook" error="Required" {...itemProps.message} />
+      <Form.TextArea title="Message" placeholder="Ask your buddy..." error="Required" {...itemProps.message} />
     </Form>
   );
 };
