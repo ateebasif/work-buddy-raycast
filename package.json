@@ -17,6 +17,13 @@
       "subtitle": "Talk with your work buddy",
       "description": "Engage in a conversation with your favorite Ollama models!",
       "mode": "view"
+    },
+    {
+      "name": "rag-talk",
+      "title": "Rag Talk",
+      "subtitle": "Rag Talk with your work buddy",
+      "description": "Engage in a conversation with your favorite Ollama models with your documents.",
+      "mode": "view"
     }
   ],
   "dependencies": {
