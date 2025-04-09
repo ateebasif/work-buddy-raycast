@@ -3,13 +3,13 @@ import fs from "fs";
 
 import { FileManagementService } from "@/lib/services/FileManagementService";
 import { FileData } from "@/types/index";
-import useChatStore from "@/store/chatStore";
+import useUnifiedChatStore from "@/store/unifiedChatStore";
 
 // Initialize the file management service
 const fileService = new FileManagementService();
 
 export default function AddFiles() {
-  const setCurrentView = useChatStore((state) => state.setCurrentView);
+  const setCurrentView = useUnifiedChatStore((state) => state.setCurrentView);
 
   const handleFileUpload = (values: { files: string[] }) => {
     const files = values.files

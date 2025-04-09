@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import { ActionPanel, Action, List, showToast, Toast } from "@raycast/api";
 
 import { FileManagementService } from "@/lib/services/FileManagementService";
-import useChatStore from "@/store/chatStore";
+import useUnifiedChatStore from "@/store/unifiedChatStore";
 import { CurrentView, FileData } from "@/types/index";
 
 const fileService = new FileManagementService(); // Initialize the file management service
 
 const FileList = () => {
   const [uploadedFiles, setUploadedFiles] = useState<FileData[]>([]); // Local state for files
-  const setCurrentView = useChatStore((state) => state.setCurrentView);
+  const setCurrentView = useUnifiedChatStore((state) => state.setCurrentView);
 
   // Function to fetch the files
   const fetchFiles = () => {
@@ -90,7 +90,7 @@ const FileList = () => {
 export default FileList;
 
 const SearchBarAccessory = () => {
-  const setCurrentView = useChatStore((state) => state.setCurrentView);
+  const setCurrentView = useUnifiedChatStore((state) => state.setCurrentView);
 
   // Function to handle the dropdown change and set the view
   const onViewChange = (newView: string) => {
