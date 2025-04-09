@@ -1,7 +1,7 @@
 import { ActionPanel, Action, Form, showToast, Toast } from "@raycast/api";
 import { useForm, FormValidation } from "@raycast/utils";
 
-import useChatStore from "@/store/chatStore";
+import useUnifiedChatStore from "@/store/unifiedChatStore";
 import { MODELS } from "@/lib/constants";
 import { generateChatName } from "@/lib/utils";
 
@@ -11,9 +11,11 @@ interface CreateChat {
 }
 
 export const CreateChat = () => {
-  const setCurrentView = useChatStore((state) => state.setCurrentView);
-  const createChat = useChatStore((state) => state.createChat);
-  const loadChat = useChatStore((state) => state.loadChat);
+  const setCurrentView = useUnifiedChatStore((state) => state.setCurrentView);
+
+  const createChat = useUnifiedChatStore((state) => state.createChat);
+
+  const loadChat = useUnifiedChatStore((state) => state.loadChat);
 
   const { handleSubmit, itemProps } = useForm<CreateChat>({
     onSubmit(values) {

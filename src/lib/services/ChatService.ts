@@ -4,11 +4,12 @@ import axios from "axios";
 import moment from "moment";
 
 import { ChatMessage, CreateChat } from "@/types/index";
+
 import { generateChatName } from "../utils";
 
 export class ChatService {
   protected CHAT_DIR: string;
-  protected isOllamaRunning: boolean | null = null; // Variable to cache the server status
+  public isOllamaRunning: boolean | null = null; // Variable to cache the server status
 
   constructor() {
     this.CHAT_DIR = path.join(__dirname, "chats");
@@ -129,10 +130,14 @@ export class ChatService {
       query,
     });
 
+    console.log("this.isOllamaRunning", this.isOllamaRunning);
+
     // Check if the Ollama server is running only once
     if (this.isOllamaRunning === null) {
       this.isOllamaRunning = await this.isOllamaServerRunning(model);
     }
+
+    console.log("hihihihi");
 
     if (!this.isOllamaRunning) {
       console.error("Ollama server is not running. Aborting request.");

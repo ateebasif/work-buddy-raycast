@@ -2,16 +2,20 @@ import { ActionPanel, Action, List, Clipboard, Toast, showToast } from "@raycast
 import moment from "moment";
 import { useMemo } from "react";
 
-import useChatStore from "@/store/chatStore";
+import useUnifiedChatStore from "@/store/unifiedChatStore";
 
 export const ChatView = () => {
-  const messages = useChatStore((state) => state.messages);
-  const inputMessage = useChatStore((state) => state.inputMessage);
-  const setInputMessage = useChatStore((state) => state.setInputMessage);
-  const sendMessage = useChatStore((state) => state.sendMessage);
-  const isLoading = useChatStore((state) => state.isLoading);
-  const setCurrentView = useChatStore((state) => state.setCurrentView);
-  const selectedChat = useChatStore((state) => state.selectedChat);
+  const setInputMessage = useUnifiedChatStore((state) => state.setInputMessage);
+  const sendMessage = useUnifiedChatStore((state) => state.sendMessage);
+  const setCurrentView = useUnifiedChatStore((state) => state.setCurrentView);
+
+  const currentService = useUnifiedChatStore((state) => state.currentService);
+  const services = useUnifiedChatStore((state) => state.services);
+
+  const messages = services[currentService].messages;
+  const inputMessage = services[currentService].inputMessage;
+  const isLoading = services[currentService].isLoading;
+  const selectedChat = services[currentService].selectedChat;
 
   const isChatEmpty = messages.length === 0;
 
