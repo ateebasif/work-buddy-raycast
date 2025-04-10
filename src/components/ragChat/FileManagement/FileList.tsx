@@ -4,12 +4,16 @@ import { ActionPanel, Action, List, showToast, Toast } from "@raycast/api";
 import { FileManagementService } from "@/lib/services/FileManagementService";
 import useUnifiedChatStore from "@/store/unifiedChatStore";
 import { CurrentView, FileData } from "@/types/index";
+import { FilesLoaderService } from "@/lib/services/FileLoaderService";
 
 const fileService = new FileManagementService(); // Initialize the file management service
+const filesLoaderService = new FilesLoaderService();
 
 const FileList = () => {
   const [uploadedFiles, setUploadedFiles] = useState<FileData[]>([]); // Local state for files
   const setCurrentView = useUnifiedChatStore((state) => state.setCurrentView);
+
+  // console.log("uploadedFiles", uploadedFiles);
 
   // Function to fetch the files
   const fetchFiles = () => {
@@ -48,6 +52,15 @@ const FileList = () => {
     }
   };
 
+  const onUploadFile = async (file: FileData) => {
+    // console.log("upload file clicked", file);
+
+    await filesLoaderService.loadFiles([file]);
+
+    // fileService.updateFileStatus(filePath, true);
+    // fetchFiles();
+  };
+
   return (
     <List
       navigationTitle="Manage Files"
@@ -76,6 +89,8 @@ const FileList = () => {
               detail={<List.Item.Detail markdown={`**Detailssss`} />}
               actions={
                 <ActionPanel>
+                  {/* <Action title="Upload File" onAction={() => onUploadFile(file.filePath)} /> */}
+                  <Action title="Upload File" onAction={() => onUploadFile(file)} />
                   <Action title="Delete File" onAction={() => handleDeleteFile(file.filePath)} />
                 </ActionPanel>
               }
