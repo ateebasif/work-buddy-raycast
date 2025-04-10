@@ -12,6 +12,7 @@ const filesLoaderService = new FilesLoaderService();
 const FileList = () => {
   const [uploadedFiles, setUploadedFiles] = useState<FileData[]>([]); // Local state for files
   const setCurrentView = useUnifiedChatStore((state) => state.setCurrentView);
+  const loadRagDocs = useUnifiedChatStore((state) => state.loadRagDocs);
 
   // console.log("uploadedFiles", uploadedFiles);
 
@@ -61,6 +62,10 @@ const FileList = () => {
     // fetchFiles();
   };
 
+  const loadFilesInMemory = async () => {
+    await loadRagDocs();
+  };
+
   return (
     <List
       navigationTitle="Manage Files"
@@ -92,6 +97,8 @@ const FileList = () => {
                   {/* <Action title="Upload File" onAction={() => onUploadFile(file.filePath)} /> */}
                   <Action title="Upload File" onAction={() => onUploadFile(file)} />
                   <Action title="Delete File" onAction={() => handleDeleteFile(file.filePath)} />
+                  <Action title="Load Files in Memory" onAction={loadFilesInMemory} />
+                  <Action title="Chat List" onAction={() => setCurrentView("chatList")} />
                 </ActionPanel>
               }
             />

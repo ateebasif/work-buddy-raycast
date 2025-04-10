@@ -9,7 +9,7 @@ import { generateChatName } from "../utils";
 
 export class ChatService {
   protected CHAT_DIR: string;
-  public isOllamaRunning: boolean | null = null; // Variable to cache the server status
+  protected isOllamaRunning: boolean | null = null; // Variable to cache the server status
 
   constructor() {
     this.CHAT_DIR = path.join(__dirname, "chats");
@@ -136,8 +136,6 @@ export class ChatService {
     if (this.isOllamaRunning === null) {
       this.isOllamaRunning = await this.isOllamaServerRunning(model);
     }
-
-    console.log("hihihihi");
 
     if (!this.isOllamaRunning) {
       console.error("Ollama server is not running. Aborting request.");

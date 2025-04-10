@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Detail } from "@raycast/api";
 
 import useUnifiedChatStore from "@/store/unifiedChatStore";
@@ -7,14 +8,13 @@ import { ChatView } from "@/components/ragChat/ChatView";
 import { ComposeMessage } from "@/components/ragChat/ComposeMessage";
 import FileList from "@/components/ragChat/FileManagement/FileList";
 import AddFiles from "@/components/ragChat/FileManagement/AddFiles";
-import { useEffect } from "react";
 
 const RagTalk = () => {
   const currentView = useUnifiedChatStore((state) => state.currentView);
   const setCurrentService = useUnifiedChatStore((state) => state.setCurrentService);
 
   useEffect(() => {
-    setCurrentService("codeFixService");
+    setCurrentService("ragChatService");
   }, []);
 
   if (currentView === "chatList") {
