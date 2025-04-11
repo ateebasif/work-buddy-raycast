@@ -6,19 +6,43 @@ import { MessagesPlaceholder, ChatPromptTemplate, PromptTemplate } from "@langch
 import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
 import { HumanMessage, SystemMessage, AIMessage } from "@langchain/core/messages";
 import { Runnable } from "@langchain/core/runnables";
-import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import path from "path";
 import { createHistoryAwareRetriever } from "langchain/chains/history_aware_retriever";
 import { createRetrievalChain } from "langchain/chains/retrieval";
 import fs from "fs";
+import { PoolConfig } from "pg";
+import { PGVectorStore, DistanceStrategy } from "@langchain/community/vectorstores/pgvector";
 
 import { ChatService } from "./ChatService";
 import moment from "moment";
 
+// Convert text into embeddings
+const embeddings = new OllamaEmbeddings({ model: "nomic-embed-text" });
+
+const config = {
+  postgresConnectionOptions: {
+    type: "postgres",
+    host: "127.0.0.1",
+    port: 5431,
+    user: "myuser",
+    password: "ChangeMe",
+    database: "api",
+  } as PoolConfig,
+  tableName: "documents",
+  columns: {
+    idColumnName: "id",
+    vectorColumnName: "vector",
+    contentColumnName: "content",
+    metadataColumnName: "metadata",
+  },
+  // supported distance strategies: cosine (default), innerProduct, or euclidean
+  distanceStrategy: "cosine" as DistanceStrategy,
+};
+
 export class DocumentChatService extends ChatService {
   private model: ChatOllama;
   private chat_history: (HumanMessage | SystemMessage)[] = [];
-  private vectorStore!: MemoryVectorStore;
+  private vectorStore!: PGVectorStore;
   private retrievalChain!: Runnable;
 
   constructor() {
@@ -31,6 +55,9 @@ export class DocumentChatService extends ChatService {
       //   model: "qwen2.5-coder:latest",
       // verbose: true,
     });
+
+    this.vectorStore = new PGVectorStore(embeddings, config);
+    this.createChatChain();
   }
 
   async createVectorStore(documents: Document[]) {
@@ -43,11 +70,7 @@ export class DocumentChatService extends ChatService {
     });
     const splitDocs = await splitter.splitDocuments(documents);
 
-    // Convert text into embeddings
-    const embeddings = new OllamaEmbeddings({ model: "nomic-embed-text" });
-
-    // Store embeddings in an in-memory vector database
-    this.vectorStore = await MemoryVectorStore.fromDocuments(splitDocs, embeddings);
+    await this.vectorStore.addDocuments(splitDocs);
 
     console.log("-------Created in memory Vector Store-------");
   }
@@ -66,7 +89,7 @@ export class DocumentChatService extends ChatService {
     // Create retriever from vector store
     const retriever = this.vectorStore.asRetriever({
       k: 3,
-      searchType: "similarity",
+      // searchType: "similarity",
     });
 
     // Create history-aware retriever chain
