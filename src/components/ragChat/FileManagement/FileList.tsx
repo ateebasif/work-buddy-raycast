@@ -4,17 +4,15 @@ import { ActionPanel, Action, List, showToast, Toast } from "@raycast/api";
 import { FileManagementService } from "@/lib/services/FileManagementService";
 import useUnifiedChatStore from "@/store/unifiedChatStore";
 import { CurrentView, FileData } from "@/types/index";
-import { FilesLoaderService } from "@/lib/services/FileLoaderService";
+import { PGVectorService } from "@/lib/services/PGVectorService";
 
-const fileService = new FileManagementService(); // Initialize the file management service
-const filesLoaderService = new FilesLoaderService();
+// / Initialize the Services
+const fileService = new FileManagementService();
+const pgVectorService = new PGVectorService();
 
 const FileList = () => {
   const [uploadedFiles, setUploadedFiles] = useState<FileData[]>([]); // Local state for files
   const setCurrentView = useUnifiedChatStore((state) => state.setCurrentView);
-  const loadRagDocs = useUnifiedChatStore((state) => state.loadRagDocs);
-
-  // console.log("uploadedFiles", uploadedFiles);
 
   // Function to fetch the files
   const fetchFiles = () => {
@@ -22,14 +20,24 @@ const FileList = () => {
     setUploadedFiles(files);
   };
 
-  // Fetch files on component mount or after a file is deleted
   useEffect(() => {
-    fetchFiles();
+    const connectToDatabase = async () => {
+      await pgVectorService.connect();
+      fetchFiles();
+    };
+
+    connectToDatabase();
+
+    return () => {
+      pgVectorService.disconnect(); // Disconnect when the component unmounts
+    };
   }, []);
 
   // Handle file deletion
-  const handleDeleteFile = (filePath: string) => {
+  const handleDeleteFile = async (filePath: string) => {
     try {
+      const fileDelete = await pgVectorService.deleteDocumentsByMetadata("", filePath);
+      console.log("fileDelete", fileDelete);
       // Delete the file from the service
       fileService.deleteFile(filePath);
 
@@ -51,19 +59,6 @@ const FileList = () => {
         message: "An error occurred while deleting the file.",
       });
     }
-  };
-
-  const onUploadFile = async (file: FileData) => {
-    // console.log("upload file clicked", file);
-
-    await filesLoaderService.loadFiles([file]);
-
-    // fileService.updateFileStatus(filePath, true);
-    // fetchFiles();
-  };
-
-  const loadFilesInMemory = async () => {
-    await loadRagDocs();
   };
 
   return (
@@ -94,10 +89,7 @@ const FileList = () => {
               detail={<List.Item.Detail markdown={`**Detailssss`} />}
               actions={
                 <ActionPanel>
-                  {/* <Action title="Upload File" onAction={() => onUploadFile(file.filePath)} /> */}
-                  <Action title="Upload File" onAction={() => onUploadFile(file)} />
                   <Action title="Delete File" onAction={() => handleDeleteFile(file.filePath)} />
-                  <Action title="Load Files in Memory" onAction={loadFilesInMemory} />
                   <Action title="Chat List" onAction={() => setCurrentView("chatList")} />
                 </ActionPanel>
               }
@@ -123,6 +115,7 @@ const SearchBarAccessory = () => {
     <List.Dropdown tooltip="Switch View" onChange={onViewChange}>
       <List.Dropdown.Item title="File List" value="fileList" />
       <List.Dropdown.Item title="Add New Files" value="addFile" />
+      <List.Dropdown.Item title="Chat List" value="chatList" />
     </List.Dropdown>
   );
 };

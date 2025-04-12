@@ -33,9 +33,9 @@ class JsonDocumentLoader extends BaseDocumentLoader {
 
   async load(): Promise<Document[]> {
     try {
-      const loadJsonFile = await import("load-json-file");
-      // @ts-ignore
-      const jsonData = await loadJsonFile<Record<string, any>[]>(this.filePath);
+      // Read the JSON file using fs.promises.readFile
+      const fileContent = await fs.promises.readFile(this.filePath, "utf-8");
+      const jsonData = JSON.parse(fileContent); // Parse the JSON data
 
       if (Array.isArray(jsonData)) {
         return jsonData.map((item) => ({
@@ -84,6 +84,7 @@ class DocService {
   protected FILE_DIR: string;
   protected FILES_JSON: string;
   private vectorStore: PGVectorStore;
+  protected fileLoadError: FileLoadError[] = [];
 
   constructor() {
     const extensionPath = "/Users/ateebasif/.config/raycast/extensions/work-buddy"; // Update this path as needed
@@ -105,9 +106,27 @@ class DocService {
     return this.getFileRecords();
   }
 
+  // Method to save the file records to JSON
+  private saveFileRecords(records: FileData[]): void {
+    fs.writeFileSync(this.FILES_JSON, JSON.stringify(records, null, 2), "utf-8");
+  }
+
+  // Method to update the file status (e.g., after upload)
+  protected updateFileStatus(filePath: string, status: boolean): void {
+    const fileRecords = this.getFileRecords();
+
+    // Find the file record by filePath and update the isUploaded status
+    const updatedRecords = fileRecords.map((file) =>
+      file.filePath === filePath ? { ...file, isUploaded: status } : file,
+    );
+
+    // Save the updated records back to the JSON file
+    this.saveFileRecords(updatedRecords);
+    // console.log(`File ${filePath} upload status updated to ${status ? "uploaded" : "not uploaded"}.`);
+  }
+
   async loadFiles(fileDataArray: FileData[]): Promise<Document[]> {
     const enrichedDocs: Document[] = [];
-    const errors: FileLoadError[] = [];
 
     for (const fileData of fileDataArray) {
       const { filePath, fileName } = fileData;
@@ -141,7 +160,7 @@ class DocService {
           loader = new PDFLoader(filePath);
           break;
         default:
-          errors.push({
+          this.fileLoadError.push({
             fileName,
             filePath,
             error: `Unsupported file type for file: ${filePath}`,
@@ -161,8 +180,8 @@ class DocService {
         }));
         enrichedDocs.push(...enriched);
       } catch (error: any) {
-        console.error(`Error loading file ${filePath}:`, error);
-        errors.push({
+        // console.error(`Error loading file ${filePath}:`, error);
+        this.fileLoadError.push({
           fileName,
           filePath,
           error: `Error loading file ${fileName}: ${error.message}`,
@@ -170,34 +189,69 @@ class DocService {
       }
     }
 
-    if (errors.length > 0) {
-      console.warn("Errors encountered during file loading:", errors);
-    }
+    // if (this.fileLoadError.length > 0) {
+    //   console.warn("Errors encountered during file loading:", this.fileLoadError);
+    // }
 
     return enrichedDocs;
   }
 
   async createVectorStore(documents: Document[]) {
-    console.log("Step 2: Creating in memory vector store");
     const splitter = new RecursiveCharacterTextSplitter({
       chunkSize: 1000,
       chunkOverlap: 50,
     });
     const splitDocs = await splitter.splitDocuments(documents);
     await this.vectorStore.addDocuments(splitDocs);
-    console.log("-------Created in memory Vector Store-------");
   }
 
   async loadDocsInDB() {
     const files = this.listFiles();
-    const docs = await this.loadFiles(files);
-    await this.createVectorStore(docs);
-    console.log("Documents added to the vector store successfully.");
+    // Filter files to only include those that have not been uploaded
+    const filesToUpload = files.filter((file) => !file.isUploaded);
+    const successfulFiles: FileData[] = []; // Array to track successfully loaded files
+
+    // Check if there are any files to upload
+    if (filesToUpload.length === 0) {
+      console.log("📁 There are no files to upload or all files have already been uploaded.");
+      return; // Exit the function early
+    }
+
+    console.log(`📂 Starting upload of ${files.length} files...`);
+
+    for (const file of filesToUpload) {
+      console.log("📄 reading file", file.fileName);
+
+      const docs = await this.loadFiles([file]);
+
+      if (docs.length > 0) {
+        // Check if any documents were loaded successfully
+        console.log("docs", docs);
+        await this.createVectorStore(docs);
+        console.log("✅ Uploaded file", file.fileName);
+
+        successfulFiles.push(file); // Add to successful files
+      } else {
+        console.error(`❌ No documents loaded for file ${file.fileName}.`);
+      }
+    }
+
+    // Update the status of only the successfully uploaded files
+    for (const file of successfulFiles) {
+      this.updateFileStatus(file.filePath, true);
+    }
+
+    if (this.fileLoadError.length > 0) {
+      console.warn(`⚠️ Errors encountered during file loading: ${this.fileLoadError.length} errors.`);
+      console.warn("Errors encountered during file loading:", this.fileLoadError);
+    }
+
+    console.log(`📊 Upload process completed. ${successfulFiles.length} files uploaded successfully.`);
   }
 }
 
-const docService = new DocService();
-
 (async () => {
+  const docService = new DocService();
+
   await docService.loadDocsInDB();
 })();

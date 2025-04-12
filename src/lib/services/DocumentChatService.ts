@@ -10,34 +10,15 @@ import path from "path";
 import { createHistoryAwareRetriever } from "langchain/chains/history_aware_retriever";
 import { createRetrievalChain } from "langchain/chains/retrieval";
 import fs from "fs";
-import { PoolConfig } from "pg";
-import { PGVectorStore, DistanceStrategy } from "@langchain/community/vectorstores/pgvector";
+import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
+import moment from "moment";
+
+import { PGVECTOR_CONFIG } from "@/lib/constants";
 
 import { ChatService } from "./ChatService";
-import moment from "moment";
 
 // Convert text into embeddings
 const embeddings = new OllamaEmbeddings({ model: "nomic-embed-text" });
-
-const config = {
-  postgresConnectionOptions: {
-    type: "postgres",
-    host: "127.0.0.1",
-    port: 5431,
-    user: "myuser",
-    password: "ChangeMe",
-    database: "api",
-  } as PoolConfig,
-  tableName: "documents",
-  columns: {
-    idColumnName: "id",
-    vectorColumnName: "vector",
-    contentColumnName: "content",
-    metadataColumnName: "metadata",
-  },
-  // supported distance strategies: cosine (default), innerProduct, or euclidean
-  distanceStrategy: "cosine" as DistanceStrategy,
-};
 
 export class DocumentChatService extends ChatService {
   private model: ChatOllama;
@@ -56,7 +37,7 @@ export class DocumentChatService extends ChatService {
       // verbose: true,
     });
 
-    this.vectorStore = new PGVectorStore(embeddings, config);
+    this.vectorStore = new PGVectorStore(embeddings, PGVECTOR_CONFIG);
     this.createChatChain();
   }
 
