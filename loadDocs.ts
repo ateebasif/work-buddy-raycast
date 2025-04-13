@@ -144,6 +144,16 @@ class DocService {
         case "txt":
           loader = new TextLoader(filePath);
           break;
+        case "ts":
+          loader = new TextLoader(filePath);
+        case "tsx":
+          loader = new TextLoader(filePath);
+          break;
+        case "js":
+          loader = new TextLoader(filePath);
+        case "jsx":
+          loader = new TextLoader(filePath);
+          break;
         case "csv":
           loader = new CSVLoader(filePath);
           break;
@@ -226,7 +236,7 @@ class DocService {
 
       if (docs.length > 0) {
         // Check if any documents were loaded successfully
-        console.log("docs", docs);
+        // console.log("docs", docs);
         await this.createVectorStore(docs);
         console.log("✅ Uploaded file", file.fileName);
 

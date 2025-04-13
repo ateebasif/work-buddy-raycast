@@ -1,6 +1,6 @@
 import { ActionPanel, Action, List, Clipboard, Toast, showToast } from "@raycast/api";
 import moment from "moment";
-import { useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 import useUnifiedChatStore from "@/store/unifiedChatStore";
 
@@ -19,11 +19,18 @@ export const ChatView = () => {
 
   const isChatEmpty = messages.length === 0;
 
-  // const sortedMessages = [...messages].sort((a, b) => b.timestamp - a.timestamp);
-
   const sortedMessages = useMemo(() => {
     return [...messages].sort((a, b) => b.timestamp - a.timestamp);
   }, [messages]);
+
+  useEffect(() => {
+    const used = process.memoryUsage().heapUsed / 1024 / 1024;
+    console.log(`📈 Memory usage: ${used.toFixed(2)} MB`);
+  }, [messages]);
+
+  const handleSendMessage = useCallback(() => {
+    sendMessage();
+  }, [sendMessage]);
 
   return (
     <List
@@ -47,7 +54,7 @@ export const ChatView = () => {
                     title="Send to AI"
                     onAction={() => {
                       /* Handle reply */
-                      sendMessage();
+                      handleSendMessage();
                     }}
                   />
                   <Action
@@ -81,7 +88,7 @@ export const ChatView = () => {
               }
               actions={
                 <ActionPanel>
-                  <Action title="Send to AI" onAction={sendMessage} />
+                  <Action title="Send to AI" onAction={handleSendMessage} />
                   <Action
                     title="Compose Message"
                     onAction={() => {

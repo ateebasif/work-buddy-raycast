@@ -9,8 +9,6 @@ import { DocumentChatService } from "@/lib/services/DocumentChatService";
 import { CodeFixService, CUSTOM_PROMPTS } from "@/lib/services/CodeFixService";
 import { ChatMessage, CreateChat, CurrentView } from "@/types/index";
 import { generateChatName } from "@/lib/utils";
-import { FileManagementService } from "@/lib/services/FileManagementService";
-import { FilesLoaderService } from "@/lib/services/FileLoaderService";
 
 const chatServices = {
   chatService: new ChatService(),
@@ -105,14 +103,12 @@ const useChatStore = create<ChatStateUnified>()(
       const { currentService } = get();
 
       if (currentService === "ragChatService") {
-        const fileManagementService = new FileManagementService();
-
-        const files = fileManagementService.listFiles();
-        const filesLoaderService = new FilesLoaderService();
-
-        const docs = await filesLoaderService.loadFiles(files);
-        await chatServices[currentService].createVectorStore(docs);
-        await chatServices[currentService].createChatChain();
+        // const fileManagementService = new FileManagementService();
+        // const files = fileManagementService.listFiles();
+        // const filesLoaderService = new FilesLoaderService();
+        // const docs = await filesLoaderService.loadFiles(files);
+        // await chatServices[currentService].createVectorStore(docs);
+        // await chatServices[currentService].createChatChain();
       }
     },
 
