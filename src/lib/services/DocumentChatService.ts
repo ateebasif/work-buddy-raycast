@@ -1,8 +1,9 @@
-import axios from "axios";
 import moment from "moment";
 import { ChatService } from "./ChatService";
 import fs from "fs";
 import path from "path";
+
+import axios from "@/lib/utils/axios";
 
 type Response = {
   chunk: string;
@@ -42,7 +43,7 @@ export class DocumentChatService extends ChatService {
       };
 
       // Send the request to the API endpoint for streaming
-      const response = await axios.post("http://localhost:3000/stream", requestBody, {
+      const response = await axios.post("/rag/stream", requestBody, {
         responseType: "stream", // Ensures we handle the response as a stream
       });
 
