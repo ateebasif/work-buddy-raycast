@@ -26,6 +26,9 @@ Work Buddy offers two main ways to interact with AI:
 
 The "Talk" command allows you to have direct conversations with your locally running Ollama models.
 
+
+https://github.com/user-attachments/assets/8adbe97b-03a8-4d07-94e6-f657cff1901c
+
 **Initial Setup (for running the client):**
 
 Before using the "Talk" command for the first time, you need to prepare the Raycast client:
@@ -52,6 +55,8 @@ Before using the "Talk" command for the first time, you need to prepare the Rayc
 ### 2. RAG Talk - Context-Aware Chat with Document Retrieval
 
 The "RAG Talk" command enables you to have conversations grounded in your own documents. You can upload files, and the AI will use their content to provide more relevant and informed responses. This feature requires the backend server and database to be running.
+
+https://github.com/user-attachments/assets/e13a743f-12e5-40b9-ae29-8f74aa11c5ac
 
 **Supported File Types for Document Upload:**
 
