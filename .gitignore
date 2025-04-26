@@ -2,12 +2,14 @@
 
 # dependencies
 /node_modules
+work-buddy-client/node_modules
+work-buddy-server/node_modules  
 
 # Raycast specific files
-raycast-env.d.ts
-.raycast-swift-build
-.swiftpm
-compiled_raycast_swift
+work-buddy-client/raycast-env.d.ts
+work-buddy-client/.raycast-swift-build
+work-buddy-client/.swiftpm
+work-buddy-client/compiled_raycast_swift
 
 # misc
 .DS_Store
