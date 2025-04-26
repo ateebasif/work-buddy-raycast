@@ -17,34 +17,55 @@
       "subtitle": "Talk with your work buddy",
       "description": "Engage in a conversation with your favorite Ollama models!",
       "mode": "view"
+    },
+    {
+      "name": "rag-talk",
+      "title": "Rag Talk",
+      "subtitle": "Rag Talk with your work buddy",
+      "description": "Engage in a conversation with your favorite Ollama models with your documents.",
+      "mode": "view"
     }
   ],
   "dependencies": {
+    "@langchain/community": "^0.3.40",
+    "@langchain/core": "^0.3.44",
+    "@langchain/ollama": "^0.2.0",
     "@raycast/api": "^1.91.2",
     "@raycast/utils": "^1.17.0",
     "axios": "^1.7.9",
+    "d3-dsv": "^3.0.1",
     "http-proxy-agent": "^7.0.2",
     "immer": "^10.1.1",
+    "load-json-file": "^7.0.1",
+    "mammoth": "^1.9.0",
     "moment": "^2.30.1",
     "nanoid": "^5.1.0",
     "node-fetch": "^3.3.2",
+    "officeparser": "^5.1.1",
+    "pdf-parse": "^1.1.1",
+    "pg": "^8.14.1",
     "undici": "^7.3.0",
     "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@raycast/eslint-config": "^1.0.11",
     "@types/node": "20.8.10",
+    "@types/pg": "^8.11.11",
     "@types/react": "18.3.3",
     "eslint": "^8.57.0",
     "prettier": "^3.3.3",
+    "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
   },
   "scripts": {
     "build": "ray build",
     "dev": "ray develop",
+    "dev1": "NODE_OPTIONS='--max-old-space-size=4096' ray develop",
     "fix-lint": "ray lint --fix",
     "lint": "ray lint",
     "prepublishOnly": "echo \"\\n\\nIt seems like you are trying to publish the Raycast extension to npm.\\n\\nIf you did intend to publish it to npm, remove the \\`prepublishOnly\\` script and rerun \\`npm publish\\` again.\\nIf you wanted to publish it to the Raycast Store instead, use \\`npm run publish\\` instead.\\n\\n\" && exit 1",
-    "publish": "npx @raycast/api@latest publish"
+    "publish": "npx @raycast/api@latest publish",
+    "loadDocs": "ts-node loadDocs.ts",
+    "pgVector": "ts-node PGVectorService.ts"
   }
 }

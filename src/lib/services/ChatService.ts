@@ -4,6 +4,7 @@ import axios from "axios";
 import moment from "moment";
 
 import { ChatMessage, CreateChat } from "@/types/index";
+
 import { generateChatName } from "../utils";
 
 export class ChatService {
@@ -128,6 +129,8 @@ export class ChatService {
       chatName,
       query,
     });
+
+    console.log("this.isOllamaRunning", this.isOllamaRunning);
 
     // Check if the Ollama server is running only once
     if (this.isOllamaRunning === null) {

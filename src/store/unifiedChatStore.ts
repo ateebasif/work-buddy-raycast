@@ -5,6 +5,7 @@ import { nanoid } from "nanoid";
 import { showToast, Toast } from "@raycast/api";
 
 import { ChatService } from "@/lib/services/ChatService";
+import { DocumentChatService } from "@/lib/services/DocumentChatService";
 import { CodeFixService, CUSTOM_PROMPTS } from "@/lib/services/CodeFixService";
 import { ChatMessage, CreateChat, CurrentView } from "@/types/index";
 import { generateChatName } from "@/lib/utils";
@@ -12,6 +13,8 @@ import { generateChatName } from "@/lib/utils";
 const chatServices = {
   chatService: new ChatService(),
   codeFixService: new CodeFixService(CUSTOM_PROMPTS),
+  // ragChatService: new ChatService(),
+  ragChatService: new DocumentChatService(),
 };
 
 interface ChatServiceState {
@@ -25,7 +28,7 @@ interface ChatServiceState {
   };
 }
 
-type CurrentService = "chatService" | "codeFixService";
+type CurrentService = "chatService" | "codeFixService" | "ragChatService";
 
 type ChatFunction = (
   model: string,
@@ -40,13 +43,17 @@ interface ChatStateUnified {
   services: ChatServiceState;
   currentView: CurrentView;
 
+  // existingChats: string[];
+  // isLoading: boolean;
+
   setCurrentService: (serviceName: CurrentService) => void;
+  loadRagDocs: () => void;
 
   // other previous methods
   createChat: (chat: CreateChat) => void;
-  loadChat: (serviceName: string, chatName: string) => void;
-  deleteChat: (serviceName: string, chatName: string) => void;
-  sendMessage: (serviceName: string) => Promise<void>;
+  loadChat: (chatName: string) => void;
+  deleteChat: (chatName: string) => void;
+  sendMessage: () => Promise<void>;
   setInputMessage: (message: string) => void;
   setSelectedChat: (chatName: string) => void;
   setCurrentView: (currentView: CurrentView) => void;
@@ -58,6 +65,9 @@ const useChatStore = create<ChatStateUnified>()(
   immer((set, get) => ({
     currentService: "chatService",
     currentView: "chatList",
+
+    existingChats: [],
+    isLoading: false,
 
     services: {
       chatService: {
@@ -76,10 +86,31 @@ const useChatStore = create<ChatStateUnified>()(
         isLoading: false,
         name: "codeFixService",
       },
+      ragChatService: {
+        messages: [],
+        existingChats: [],
+        selectedChat: null,
+        inputMessage: "",
+        isLoading: false,
+        name: "ragChatService",
+      },
     },
 
     setCurrentService: (serviceName) => set({ currentService: serviceName }),
     setCurrentView: (currentView) => set({ currentView }),
+
+    loadRagDocs: async () => {
+      const { currentService } = get();
+
+      if (currentService === "ragChatService") {
+        // const fileManagementService = new FileManagementService();
+        // const files = fileManagementService.listFiles();
+        // const filesLoaderService = new FilesLoaderService();
+        // const docs = await filesLoaderService.loadFiles(files);
+        // await chatServices[currentService].createVectorStore(docs);
+        // await chatServices[currentService].createChatChain();
+      }
+    },
 
     setIsloading: (isLoading) => {
       const { currentService } = get();
@@ -194,6 +225,8 @@ const useChatStore = create<ChatStateUnified>()(
         timestamp: moment().valueOf(),
       };
 
+      console.log("userMessage", userMessage);
+
       set((state) => {
         state.services[currentService].messages.push(userMessage);
         state.services[currentService].inputMessage = "";
@@ -214,7 +247,8 @@ const useChatStore = create<ChatStateUnified>()(
       }
 
       try {
-        await chatFunction(
+        await chatFunction.call(
+          service,
           model,
           selectedChat,
           inputMessage,
