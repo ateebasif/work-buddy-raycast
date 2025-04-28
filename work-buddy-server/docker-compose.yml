@@ -1,0 +1,42 @@
+volumes:
+  pgVector:
+    name: "pgdata"
+# Run this command to start the database:
+# docker compose up
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    hostname: 127.0.0.1
+    container_name: work_buddy_db
+    ports:
+      - 5431:5432
+    restart: always
+    environment:
+      - POSTGRES_DB=api
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=ChangeMe
+    volumes:
+      - pgVector:/var/lib/postgresql/data # Mounts the pgVector volume to the PostgreSQL data directory
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql # Mount the init.sql file
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: work_buddy_server
+    ports:
+      - 4000:4000
+    depends_on:
+      - db
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - OLLAMA_HOST=host.docker.internal # For Mac/Windows, this refers to the host
+      - OLLAMA_PORT=11434
+      - PG_HOST=db # 👈 use Docker Compose service name
+      - PG_PORT=5432
+      - PG_USER=myuser
+      - PG_PASSWORD=ChangeMe
+      - PG_DATABASE=api
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
