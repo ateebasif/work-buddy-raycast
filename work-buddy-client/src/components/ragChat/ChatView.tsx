@@ -97,6 +97,7 @@ export const ChatView = () => {
                   />
                   <Action
                     title="Copy to Clipboard"
+                    shortcut={{ modifiers: ["ctrl"], key: "c" }}
                     onAction={async () => {
                       await Clipboard.copy(msg.content)
                         .then(() => {
@@ -117,6 +118,11 @@ export const ChatView = () => {
                     title="Chat List"
                     shortcut={{ modifiers: ["opt"], key: "escape" }}
                     onAction={() => setCurrentView("chatList")}
+                  />
+                  <Action
+                    title="Manage Files"
+                    shortcut={{ modifiers: ["opt"], key: "f" }}
+                    onAction={() => setCurrentView("fileList")}
                   />
                 </ActionPanel>
               }
