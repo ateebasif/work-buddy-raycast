@@ -33,7 +33,7 @@ export const ragChat = async (req: Request, res: Response) => {
 
     // Use your RAG chat service to process the request
     await documentChatService.streamOllamaResponse(
-      "mistral:latest", // Model name
+      model || "mistral:latest", // Model name
       chatName,
       query,
       chatHistory as Array<ChatHistory>,

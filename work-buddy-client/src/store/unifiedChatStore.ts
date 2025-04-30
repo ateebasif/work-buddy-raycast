@@ -59,6 +59,7 @@ interface ChatStateUnified {
   setCurrentView: (currentView: CurrentView) => void;
   loadChats: () => void;
   setIsloading: (isLoading: boolean) => void;
+  fetchInstalledModels: () => Promise<string[]>;
 }
 
 const useChatStore = create<ChatStateUnified>()(
@@ -298,6 +299,21 @@ const useChatStore = create<ChatStateUnified>()(
         set((state) => {
           state.services[currentService].isLoading = false;
         });
+      }
+    },
+
+    fetchInstalledModels: async () => {
+      try {
+        const models = await chatServices.chatService.getInstalledModels();
+        return models;
+      } catch (error) {
+        console.error("Failed to fetch installed models:", error);
+        showToast({
+          style: Toast.Style.Failure,
+          title: "Error Fetching Models",
+          message: "Could not retrieve the list of installed models.",
+        });
+        return [];
       }
     },
   })),

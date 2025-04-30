@@ -31,6 +31,7 @@ const embeddings = new OllamaEmbeddings({
 
 export class DocumentChatService {
   private model: ChatOllama;
+  private modelName: string = "llama3.2:latest"; // Initial model
   private chat_history: (HumanMessage | SystemMessage)[] = [];
   private vectorStore!: PGVectorStore;
   private retrievalChain!: Runnable;
@@ -38,8 +39,9 @@ export class DocumentChatService {
 
   constructor() {
     this.model = new ChatOllama({
-      model: "llama3.2:latest",
+      model: this.modelName,
       baseUrl: OLLAMA_BASE_URL,
+      temperature: 0.7,
     });
 
     this.vectorStore = new PGVectorStore(embeddings, PGVECTOR_CONFIG);
@@ -47,19 +49,30 @@ export class DocumentChatService {
   }
 
   //! Method to check if the Ollama server is running
-  protected async isOllamaServerRunning(model = "llama3.2"): Promise<boolean> {
-    try {
-      const response = await axios.post(`${OLLAMA_BASE_URL}/api/generate`, {
-        model: model,
-        prompt: "hey, just say hi",
-      });
 
-      // Log the response for debugging
-      console.log("✅ Ollama is running:");
-      return response.status === 200; // Assuming a 200 status means the server is running
+  protected async isOllamaServerRunning(): Promise<boolean> {
+    try {
+      const response = await axios.get(OLLAMA_BASE_URL);
+      console.log("✅ Ollama is running (base endpoint):");
+      return response.status === 200;
     } catch (error) {
-      console.error("❌ Ollama server is not running:", error);
-      return false; // Server is not running
+      console.error("❌ Ollama server is not running (base endpoint):", error);
+      return false;
+    }
+  }
+
+  // Method to initialize the model if it's different from the current one
+  private async setModelIfNeeded(newModelName: string) {
+    // Only reinitialize if the new model is different from the current model
+    if (newModelName !== this.modelName) {
+      console.log(`Switching model to: ${newModelName}`);
+      this.modelName = newModelName; // Update the model name state
+      this.model = new ChatOllama({
+        model: newModelName,
+        baseUrl: OLLAMA_BASE_URL,
+        temperature: 0.7,
+      });
+      await this.createChatChain(); // Recreate chat chain with the new model
     }
   }
 
@@ -106,7 +119,9 @@ export class DocumentChatService {
 
   async createChatChain() {
     const systemInstructions = `
-          You are an intelligent and professional AI assistant designed to help users by answering questions and performing tasks using both the content of the provided documents and your general knowledge.
+          You are an intelligent and professional AI assistant designed to help users by answering questions and performing tasks using both the content of the provided documents and your general knowledge. 
+
+ 
 
           Your behavior should adapt to the task and the available information.
 
@@ -140,6 +155,13 @@ export class DocumentChatService {
       ["system", systemInstructions],
       new MessagesPlaceholder("chat_history"),
       ["user", "{input}"],
+      // [
+      //   "user",
+      //   `
+      //   Given the context information and not prior knowledge, answer the query.\n
+
+      //   Query: {input}`,
+      // ],
     ]);
 
     console.log("Step 3: Creating combined Docs Chain");
@@ -176,12 +198,12 @@ export class DocumentChatService {
       model,
       chatName,
       query,
-      chatHistory,
+      // chatHistory,
     });
 
     // Check if the Ollama server is running only once
     if (this.isOllamaRunning === null) {
-      this.isOllamaRunning = await this.isOllamaServerRunning(model);
+      this.isOllamaRunning = await this.isOllamaServerRunning();
     }
 
     if (!this.isOllamaRunning) {
@@ -195,6 +217,9 @@ export class DocumentChatService {
     console.log("⛩️ inside rag chat", { query });
 
     try {
+      // Check if we need to change the model before proceeding
+      await this.setModelIfNeeded(model);
+
       // Use the retrieval chain to stream the response
       const resultStream = await this.retrievalChain.stream({
         input: query,

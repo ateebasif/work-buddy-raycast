@@ -101,19 +101,15 @@ export class ChatService {
   }
 
   //! Method to check if the Ollama server is running
-  protected async isOllamaServerRunning(model = "llama3.2"): Promise<boolean> {
-    try {
-      const response = await axios.post("http://localhost:11434/api/generate", {
-        model: model,
-        prompt: "hey, just say hi",
-      });
 
-      // Log the response for debugging
-      console.log("✅ Ollama is running:");
-      return response.status === 200; // Assuming a 200 status means the server is running
+  protected async isOllamaServerRunning(): Promise<boolean> {
+    try {
+      const response = await axios.get("http://localhost:11434");
+      console.log("✅ Ollama is running (base endpoint):");
+      return response.status === 200;
     } catch (error) {
-      console.error("❌ Ollama server is not running:", error);
-      return false; // Server is not running
+      console.error("❌ Ollama server is not running (base endpoint):", error);
+      return false;
     }
   }
 
@@ -134,7 +130,7 @@ export class ChatService {
 
     // Check if the Ollama server is running only once
     if (this.isOllamaRunning === null) {
-      this.isOllamaRunning = await this.isOllamaServerRunning(model);
+      this.isOllamaRunning = await this.isOllamaServerRunning();
     }
 
     if (!this.isOllamaRunning) {
@@ -189,25 +185,3 @@ export class ChatService {
     }
   }
 }
-
-// Example Usage
-// const chatService = new ChatService();
-// chatService.appendMessage("bug_fixes", "user", "How do I fix this bug?");
-// chatService.appendMessage("bug_fixes", "assistant", "Try checking the error logs.");
-// console.log(chatService.loadChatHistory("bug_fixes"));
-
-// chatService.renameChat("bug_fixes", "debugging_tips");
-// console.log(chatService.listChats());
-
-// // Switching model and streaming query
-// chatService.streamOllamaResponse(
-//   "llama2",
-//   "debugging_tips",
-//   "Can you help me fix this bug?",
-//   (chunk) => {
-//     console.log(chunk);
-//   },
-//   () => {
-//     console.log("Stream finished.");
-//   },
-// );
