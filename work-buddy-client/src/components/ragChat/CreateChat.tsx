@@ -11,13 +11,13 @@ interface CreateChat {
 }
 
 export const CreateChat = () => {
+  const [availableModels, setAvailableModels] = useState<string[]>([]); // State to hold fetched models
+  const [isLoadingModels, setIsLoadingModels] = useState(true); // State to track loading
+
   const setCurrentView = useUnifiedChatStore((state) => state.setCurrentView);
   const createChat = useUnifiedChatStore((state) => state.createChat);
   const loadChat = useUnifiedChatStore((state) => state.loadChat);
   const fetchInstalledModels = useUnifiedChatStore((state) => state.fetchInstalledModels);
-
-  const [availableModels, setAvailableModels] = useState<string[]>([]); // State to hold fetched models
-  const [isLoadingModels, setIsLoadingModels] = useState(true); // State to track loading
 
   useEffect(() => {
     async function getModels() {

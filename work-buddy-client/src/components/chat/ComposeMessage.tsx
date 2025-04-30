@@ -1,12 +1,12 @@
 import { ActionPanel, Action, Form, showToast, Toast } from "@raycast/api";
 import { useForm, FormValidation } from "@raycast/utils";
 
-import useChatStore from "@/store/chatStore";
+import useUnifiedChatStore from "@/store/unifiedChatStore";
 
 export const ComposeMessage = () => {
-  const setInputMessage = useChatStore((state) => state.setInputMessage);
-  const sendMessage = useChatStore((state) => state.sendMessage);
-  const setCurrentView = useChatStore((state) => state.setCurrentView);
+  const setInputMessage = useUnifiedChatStore((state) => state.setInputMessage);
+  const sendMessage = useUnifiedChatStore((state) => state.sendMessage);
+  const setCurrentView = useUnifiedChatStore((state) => state.setCurrentView);
 
   const { handleSubmit, itemProps } = useForm<{ message: string }>({
     onSubmit(values) {

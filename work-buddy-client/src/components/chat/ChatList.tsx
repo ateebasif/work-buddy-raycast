@@ -1,15 +1,18 @@
 import { useEffect } from "react";
 import { ActionPanel, Action, List } from "@raycast/api";
 
-import useChatStore from "@/store/chatStore";
+import useUnifiedChatStore from "@/store/unifiedChatStore";
 
 export const ChatList = () => {
-  const existingChats = useChatStore((state) => state.existingChats);
-  const loadChat = useChatStore((state) => state.loadChat);
-  const deleteChat = useChatStore((state) => state.deleteChat);
-  const setCurrentView = useChatStore((state) => state.setCurrentView);
-  const loadChats = useChatStore((state) => state.loadChats);
-  const isLoading = useChatStore((state) => state.isLoading);
+  const loadChat = useUnifiedChatStore((state) => state.loadChat);
+  const deleteChat = useUnifiedChatStore((state) => state.deleteChat);
+  const setCurrentView = useUnifiedChatStore((state) => state.setCurrentView);
+  const loadChats = useUnifiedChatStore((state) => state.loadChats);
+  const currentService = useUnifiedChatStore((state) => state.currentService);
+  const services = useUnifiedChatStore((state) => state.services);
+
+  const isLoading = services[currentService].isLoading;
+  const existingChats = services[currentService].existingChats;
 
   const onChatSelect = (chat: string) => {
     loadChat(chat);

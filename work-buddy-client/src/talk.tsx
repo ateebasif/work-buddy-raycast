@@ -1,13 +1,19 @@
 import { Detail } from "@raycast/api";
 
-import useChatStore from "@/store/chatStore";
+import useUnifiedChatStore from "@/store/unifiedChatStore";
 import { ChatList } from "@/components/chat/ChatList";
 import { CreateChat } from "@/components/chat/CreateChat";
 import { ChatView } from "@/components/chat/ChatView";
 import { ComposeMessage } from "@/components/chat/ComposeMessage";
+import { useEffect } from "react";
 
 const Talk = () => {
-  const currentView = useChatStore((state) => state.currentView);
+  const currentView = useUnifiedChatStore((state) => state.currentView);
+  const setCurrentService = useUnifiedChatStore((state) => state.setCurrentService);
+
+  useEffect(() => {
+    setCurrentService("chatService");
+  }, []);
 
   if (currentView === "chatList") {
     return <ChatList />;
