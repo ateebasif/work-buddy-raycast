@@ -126,7 +126,3 @@ Refer to the `work-buddy-server`'s `package.json` or `pnpm-lock.yaml` for server
 - **Ollama not running:** Ensure that Ollama is running in the background before using the extension.
 - **Models not found:** Double-check that you have downloaded the required Ollama models.
 - **RAG Talk server issues:** If you encounter problems with "RAG Talk," verify that your Docker containers for the server and database are running without errors. Check the Docker logs for any specific issues.
-
-```
-
-```
