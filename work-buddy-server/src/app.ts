@@ -3,8 +3,8 @@ import bodyParser from "body-parser";
 import multer from "multer";
 import "dotenv/config";
 
-import chatRoutes from "@/routes/chat.routes"; // RAG chat routes
-import documentRoutes from "@/routes/document.routes"; // RAG chat routes
+import chatRoutes from "@/routes/chat.routes";
+import documentRoutes from "@/routes/document.routes";
 
 const app = express();
 const port = process.env.PORT;

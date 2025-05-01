@@ -1,8 +1,6 @@
 import { PoolConfig } from "pg";
 import { DistanceStrategy } from "@langchain/community/vectorstores/pgvector";
 
-export const MODELS = ["mistral:latest", "codegemma:7b", "deepseek-r1:1.5b", "llama3.2:latest"];
-
 export const PGVECTOR_CONFIG = {
   postgresConnectionOptions: {
     type: "postgres",

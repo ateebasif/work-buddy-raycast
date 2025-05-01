@@ -89,7 +89,7 @@ export class ChatService {
 
     try {
       const response = await axios.get("http://localhost:11434/api/tags");
-      console.log("Installed models response:", response.data);
+      // console.log("Installed models response:", response.data);
 
       // Extract model names from the response
       const modelNames = response.data.models.map((model: { name: string }) => model.name);

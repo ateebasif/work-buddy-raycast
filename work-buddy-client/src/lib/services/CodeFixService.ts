@@ -33,7 +33,7 @@ export class CodeFixService extends ChatService {
 
     // Check if the Ollama server is running only once
     if (this.isOllamaRunning === null) {
-      this.isOllamaRunning = await this.isOllamaServerRunning(model);
+      this.isOllamaRunning = await this.isOllamaServerRunning();
     }
 
     if (!this.isOllamaRunning) {

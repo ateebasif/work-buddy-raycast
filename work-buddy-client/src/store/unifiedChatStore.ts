@@ -13,7 +13,6 @@ import { generateChatName } from "@/lib/utils";
 const chatServices = {
   chatService: new ChatService(),
   codeFixService: new CodeFixService(CUSTOM_PROMPTS),
-  // ragChatService: new ChatService(),
   ragChatService: new DocumentChatService(),
 };
 
@@ -43,13 +42,7 @@ interface ChatStateUnified {
   services: ChatServiceState;
   currentView: CurrentView;
 
-  // existingChats: string[];
-  // isLoading: boolean;
-
   setCurrentService: (serviceName: CurrentService) => void;
-  loadRagDocs: () => void;
-
-  // other previous methods
   createChat: (chat: CreateChat) => void;
   loadChat: (chatName: string) => void;
   deleteChat: (chatName: string) => void;
@@ -100,19 +93,6 @@ const useChatStore = create<ChatStateUnified>()(
     setCurrentService: (serviceName) => set({ currentService: serviceName }),
     setCurrentView: (currentView) => set({ currentView }),
 
-    loadRagDocs: async () => {
-      const { currentService } = get();
-
-      if (currentService === "ragChatService") {
-        // const fileManagementService = new FileManagementService();
-        // const files = fileManagementService.listFiles();
-        // const filesLoaderService = new FilesLoaderService();
-        // const docs = await filesLoaderService.loadFiles(files);
-        // await chatServices[currentService].createVectorStore(docs);
-        // await chatServices[currentService].createChatChain();
-      }
-    },
-
     setIsloading: (isLoading) => {
       const { currentService } = get();
       set((state) => {
@@ -126,7 +106,6 @@ const useChatStore = create<ChatStateUnified>()(
         state.services[currentService].inputMessage = message;
       });
     },
-    // setSelectedChat: (chatName) => set({ selectedChat: chatName }),
 
     setSelectedChat: (chatName) => {
       const { currentService } = get();
@@ -139,7 +118,7 @@ const useChatStore = create<ChatStateUnified>()(
       const { currentService } = get();
 
       set((state) => {
-        state.services[currentService].isLoading = true; // Set loading to true
+        state.services[currentService].isLoading = true;
       });
 
       try {
@@ -156,7 +135,7 @@ const useChatStore = create<ChatStateUnified>()(
         });
       } finally {
         set((state) => {
-          state.services[currentService].isLoading = false; // Set loading to false
+          state.services[currentService].isLoading = false;
         });
       }
     },
@@ -216,7 +195,6 @@ const useChatStore = create<ChatStateUnified>()(
 
       if (!inputMessage.trim() || !selectedChat) return;
 
-      // const model = selectedChat.split("-")[1]; // Extract model from selectedChat
       const model = selectedChat.split("__")[1]; // Extract model from selectedChat
 
       const userMessage: ChatMessage = {

@@ -17,7 +17,6 @@ export const uploadDocument = async (req: Request, res: Response) => {
       await pgService.insertVectorDocuments(docs);
     }
 
-    // Simulate document upload
     console.log("Document uploaded successfully");
     res
       .status(200)
@@ -34,7 +33,6 @@ export const deleteDocument = async (req: Request, res: Response) => {
     console.log("req.body", req.body);
 
     const pgService = new PGVectorService();
-    // await pgService.connect();
     const deleteRes = await pgService.deleteDocumentsByMetadata(
       fileName,
       filePath
@@ -49,7 +47,6 @@ export const deleteDocument = async (req: Request, res: Response) => {
         .status(400)
         .json({ success: false, error: deleteRes.error, data: null });
     }
-    // Simulate document upload
   } catch (err) {
     console.log("error in deleting document", err);
     res.status(500).json({ success: false, error: err, data: null });

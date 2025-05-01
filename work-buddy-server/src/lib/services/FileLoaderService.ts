@@ -44,10 +44,10 @@ export class FilesLoaderService {
       const fileExtension = fileName.split(".").pop()?.toLowerCase();
       switch (fileExtension) {
         case "json":
-          loader = new JsonDocumentLoader(fileBlob); // Pass the Blob
+          loader = new JsonDocumentLoader(fileBlob);
           break;
         case "jsonl":
-          loader = new JSONLinesLoader(fileBlob, "/html"); // This might also need adaptation for buffers
+          loader = new JSONLinesLoader(fileBlob, "/html");
           break;
         case "txt":
         case "ts":
@@ -55,19 +55,19 @@ export class FilesLoaderService {
         case "js":
         case "jsx":
         case "md":
-          loader = new TextLoader(fileBlob); // Adapted to accept Blob
+          loader = new TextLoader(fileBlob);
           break;
         case "csv":
-          loader = new CSVLoader(fileBlob); // Adapted to accept Blob
+          loader = new CSVLoader(fileBlob);
           break;
         case "docx":
-          loader = new DocxLoader(fileBlob); // Adapted to accept Blob
+          loader = new DocxLoader(fileBlob);
           break;
         case "pptx":
-          loader = new PPTXLoader(fileBlob); // Adapted to accept Blob
+          loader = new PPTXLoader(fileBlob);
           break;
         case "pdf":
-          loader = new PDFLoader(fileBlob); // Adapted to accept Blob
+          loader = new PDFLoader(fileBlob);
           break;
         default:
           this.fileLoadError.push({

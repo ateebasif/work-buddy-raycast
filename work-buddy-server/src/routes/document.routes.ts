@@ -2,7 +2,7 @@ import express from "express";
 import {
   uploadDocument,
   deleteDocument,
-} from "@/controllers/document.controller"; // Adjust the path if needed
+} from "@/controllers/document.controller";
 
 const router = express.Router();
 

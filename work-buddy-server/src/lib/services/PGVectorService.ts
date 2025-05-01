@@ -21,21 +21,19 @@ export class PGVectorService {
     this.vectorStore = new PGVectorStore(embeddings, PGVECTOR_CONFIG);
   }
 
-  // Replaced the client connect and disconnect with pooling
   async connect() {
     // Pool handles connections automatically, no need for manual connect in each request.
     const client = await this.pool.connect(); // Get a client from the pool
     return client; // Return the client for queries
   }
 
-  // Disconnect the pool at server shutdown (Optional, only if you want to explicitly close connections)
   async disconnect() {
     await this.pool.end();
     console.log("Disconnected from PostgreSQL database.");
   }
 
   async createTable() {
-    const client = await this.connect(); // Use the pooled connection client
+    const client = await this.connect();
     await client.query(`
       CREATE TABLE IF NOT EXISTS documents (
         id bigserial PRIMARY KEY,

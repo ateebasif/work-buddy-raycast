@@ -31,7 +31,6 @@ export const ragChat = async (req: Request, res: Response) => {
   try {
     let assistantResponse = "";
 
-    // Use your RAG chat service to process the request
     await documentChatService.streamOllamaResponse(
       model || "mistral:latest", // Model name
       chatName,

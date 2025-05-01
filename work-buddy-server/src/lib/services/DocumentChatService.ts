@@ -23,7 +23,6 @@ import axios from "axios";
 import { OLLAMA_BASE_URL, PGVECTOR_CONFIG } from "@/constants";
 import { ChatHistory } from "@/types";
 
-// Convert text into embeddings
 const embeddings = new OllamaEmbeddings({
   model: "nomic-embed-text",
   baseUrl: OLLAMA_BASE_URL,
@@ -49,7 +48,6 @@ export class DocumentChatService {
   }
 
   //! Method to check if the Ollama server is running
-
   protected async isOllamaServerRunning(): Promise<boolean> {
     try {
       const response = await axios.get(OLLAMA_BASE_URL);
@@ -81,8 +79,8 @@ export class DocumentChatService {
 
     // Split large documents into smaller chunks
     const splitter = new RecursiveCharacterTextSplitter({
-      chunkSize: 500, // Reduce chunk size for better memory usage
-      chunkOverlap: 10,
+      chunkSize: 700, // Reduce chunk size for better memory usage
+      chunkOverlap: 50,
     });
     const splitDocs = await splitter.splitDocuments(documents);
 
@@ -155,13 +153,6 @@ export class DocumentChatService {
       ["system", systemInstructions],
       new MessagesPlaceholder("chat_history"),
       ["user", "{input}"],
-      // [
-      //   "user",
-      //   `
-      //   Given the context information and not prior knowledge, answer the query.\n
-
-      //   Query: {input}`,
-      // ],
     ]);
 
     console.log("Step 3: Creating combined Docs Chain");
